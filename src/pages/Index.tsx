@@ -5,6 +5,7 @@ import AboutSection from "@/components/AboutSection";
 import ProgramsSection from "@/components/ProgramsSection";
 import FacultySection from "@/components/FacultySection";
 import FooterSection from "@/components/FooterSection";
+import ChatBot from "@/components/ChatBot";
 
 const Index = () => (
   <div className="min-h-screen">
@@ -15,6 +16,7 @@ const Index = () => (
     <ProgramsSection />
     <FacultySection />
     <FooterSection />
+    <ChatBot />
   </div>
 );
 
