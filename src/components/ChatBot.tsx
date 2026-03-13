@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const ChatBot = () => {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: "bot" as const, content: "👋 Hi! I'm the CSE Department assistant. How can I help you today?" },
+  const [messages, setMessages] = useState<{ role: "bot" | "user"; content: string }[]>([
+    { role: "bot", content: "👋 Hi! I'm the CSE Department assistant. How can I help you today?" },
   ]);
   const [input, setInput] = useState("");
 
