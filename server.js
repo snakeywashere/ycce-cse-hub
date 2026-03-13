@@ -1,31 +1,30 @@
-import * as dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 import Groq from 'groq-sdk';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-export default async function handler(req, res) {
-  // Add CORS headers for testing from other domains if necessary (Vercel manages CORS for same-domain)
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
-  }
-
+// API Route for Chatbot
+app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
     
     if (!messages) {
       return res.status(400).json({ error: 'Messages are required' });
     }
-    
+
     const formattedMessages = messages.map(msg => ({
       role: msg.role === 'bot' ? 'assistant' : msg.role,
       content: msg.content
@@ -41,9 +40,22 @@ export default async function handler(req, res) {
       model: "llama-3.1-8b-instant", 
     });
 
-    res.status(200).json({ role: 'bot', content: completion.choices[0]?.message?.content || "I couldn't process that request." });
+    res.json({ role: 'bot', content: completion.choices[0]?.message?.content || "I couldn't process that request." });
   } catch (error) {
     console.error('Error with AI API:', error);
     res.status(500).json({ error: 'An error occurred while communicating with the AI.' });
   }
-}
+});
+
+// Serve frontend build
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
