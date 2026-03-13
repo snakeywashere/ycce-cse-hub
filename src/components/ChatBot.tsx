@@ -8,18 +8,41 @@ const ChatBot = () => {
     { role: "bot", content: "👋 Hi! I'm the CSE Department assistant. How can I help you today?" },
   ]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages((prev) => [...prev, { role: "user", content: input }]);
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
+    
+    const userMessage = { role: "user" as const, content: input };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput("");
-    // Placeholder bot reply
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "bot", content: "Thanks for your message! This chatbot is currently a demo. Please contact cse@ycce.edu for assistance." },
-      ]);
-    }, 800);
+    setIsLoading(true);
+
+    try {
+      // Use absolute path for local Vite dev proxy to Express but use /api/chat directly on Vercel
+      const apiUrl = import.meta.env.DEV ? "http://localhost:5000/api/chat" : "/api/chat";
+      
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMessages }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMessages((prev) => [...prev, { role: "bot", content: data.content }]);
+      } else {
+        console.error("Backend error:", data.error);
+        setMessages((prev) => [...prev, { role: "bot", content: "Sorry, I am having trouble processing that right now." }]);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      setMessages((prev) => [...prev, { role: "bot", content: "Sorry, I couldn't reach the server." }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
