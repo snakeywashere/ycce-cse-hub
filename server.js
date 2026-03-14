@@ -14,8 +14,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
+// Initialize Groq conditionally to avoid deployment crashes
+let groq = null;
+try {
+  if (process.env.GROQ_API_KEY) {
+    groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  }
+} catch (error) {
+  console.warn("GROQ_API_KEY is not set or invalid. Chatbot features will not work until configured.");
+}
 // API Route for Chatbot
 app.post('/api/chat', async (req, res) => {
   try {
@@ -34,6 +41,10 @@ app.post('/api/chat', async (req, res) => {
       role: 'system',
       content: "You are a specialized assistant for the Computer Science Engineering (CSE) Department at Yeshwantrao Chavan College of Engineering (YCCE). You must ONLY answer questions related to YCCE, its CSE department, admissions, courses, faculty, events, or general college information. If a user asks a question completely unrelated to YCCE or the CSE department (like general knowledge, coding help, recipes, etc.), politely decline to answer and remind them of your specific purpose."
     });
+    
+    if (!groq) {
+      return res.status(503).json({ error: 'AI service is not configured (missing GROQ_API_KEY environment variable).' });
+    }
     
     const completion = await groq.chat.completions.create({
       messages: formattedMessages,

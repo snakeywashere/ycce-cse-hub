@@ -21,7 +21,7 @@ const ChatBot = () => {
 
     try {
       // Use absolute path for local Vite dev proxy to Express but use /api/chat directly on Vercel
-      const apiUrl = import.meta.env.DEV ? "http://localhost:5000/api/chat" : "/api/chat";
+      const apiUrl = import.meta.env.DEV ? "http://127.0.0.1:5000/api/chat" : "/api/chat";
       
       const response = await fetch(apiUrl, {
         method: "POST",
