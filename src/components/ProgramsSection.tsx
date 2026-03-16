@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { GraduationCap, Clock, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const programs = [
   { name: "B.Tech in Computer Science & Engineering", duration: "4 Years", intake: "120 Seats", desc: "Comprehensive undergraduate program covering core CS fundamentals, software development, and emerging technologies." },
@@ -31,21 +32,28 @@ const ProgramsSection = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.15 }}
+            whileHover={{ y: -8, rotateY: -3, rotateX: 2, transition: { duration: 0.25 } }}
             className="bg-card rounded-xl p-7 shadow-card border border-border hover:shadow-elevated transition-all group"
+            style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
           >
             <div className="flex items-center gap-2 text-accent mb-4">
               <GraduationCap className="w-5 h-5" />
               <span className="text-xs font-semibold uppercase tracking-wide">{p.intake}</span>
             </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">{p.name}</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-accent transition-colors">
+              {p.name}
+            </h3>
             <div className="flex items-center gap-1.5 text-muted-foreground text-sm mb-4">
               <Clock className="w-4 h-4" />
               <span>{p.duration}</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">{p.desc}</p>
-            <span className="inline-flex items-center gap-1 text-sm font-medium text-accent group-hover:gap-2 transition-all cursor-pointer">
-              Learn More <ArrowRight className="w-4 h-4" />
-            </span>
+            <Link
+              to="/admissions"
+              className="inline-flex items-center gap-1 text-sm font-medium text-accent group-hover:gap-2 transition-all"
+            >
+              Learn More <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </motion.div>
         ))}
       </div>

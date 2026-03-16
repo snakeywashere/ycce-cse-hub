@@ -1,4 +1,14 @@
 import { MapPin, Phone, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const quickLinks = [
+  { label: "About", href: "/#about" },
+  { label: "Programs", href: "/#programs" },
+  { label: "Admissions", href: "/admissions" },
+  { label: "Placements", href: "/placements" },
+  { label: "Events", href: "/events" },
+  { label: "Gallery", href: "/gallery" },
+];
 
 const FooterSection = () => (
   <footer id="contact" className="bg-navy-dark py-16">
@@ -14,11 +24,27 @@ const FooterSection = () => (
         <div>
           <h4 className="font-semibold text-accent mb-4">Quick Links</h4>
           <div className="flex flex-col gap-2">
-            {["About", "Programs", "Faculty", "Admissions", "Placements"].map(link => (
-              <a key={link} href={`#${link.toLowerCase()}`} className="text-sm hover:text-accent transition-colors" style={{ color: "hsl(220, 20%, 65%)" }}>
-                {link}
-              </a>
-            ))}
+            {quickLinks.map((link) =>
+              link.href.startsWith("/#") ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-sm hover:text-accent hover:translate-x-1 transition-all duration-200 inline-block"
+                  style={{ color: "hsl(220, 20%, 65%)" }}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className="text-sm hover:text-accent hover:translate-x-1 transition-all duration-200 inline-block"
+                  style={{ color: "hsl(220, 20%, 65%)" }}
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
           </div>
         </div>
 
