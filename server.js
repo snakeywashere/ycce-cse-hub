@@ -27,7 +27,7 @@ try {
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages } = req.body;
-    
+
     if (!messages) {
       return res.status(400).json({ error: 'Messages are required' });
     }
@@ -41,14 +41,14 @@ app.post('/api/chat', async (req, res) => {
       role: 'system',
       content: "You are a specialized assistant for the Computer Science Engineering (CSE) Department at Yeshwantrao Chavan College of Engineering (YCCE). You must ONLY answer questions related to YCCE, its CSE department, admissions, courses, faculty, events, or general college information. If a user asks a question completely unrelated to YCCE or the CSE department (like general knowledge, coding help, recipes, etc.), politely decline to answer and remind them of your specific purpose."
     });
-    
+
     if (!groq) {
       return res.status(503).json({ error: 'AI service is not configured (missing GROQ_API_KEY environment variable).' });
     }
-    
+
     const completion = await groq.chat.completions.create({
       messages: formattedMessages,
-      model: "llama-3.1-8b-instant", 
+      model: "llama-3.1-8b-instant",
     });
 
     res.json({ role: 'bot', content: completion.choices[0]?.message?.content || "I couldn't process that request." });
